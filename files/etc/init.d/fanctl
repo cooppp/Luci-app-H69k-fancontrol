@@ -1,0 +1,53 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+USE_PROCD=1
+
+CONFIG=/etc/config/fanctl
+
+get_config() {
+    uci -q get $CONFIG.config.$1 || echo 0
+}
+
+calculate_pwm() {
+    temp=$1
+    min_temp=$2
+    max_temp=$3
+    min_rpm=$4
+    max_rpm=$5
+
+    [ $temp -le $min_temp ] && echo $min_rpm && return
+    [ $temp -ge $max_temp ] && echo $max_rpm && return
+
+    temp_range=$((max_temp - min_temp))
+    pwm_range=$((max_rpm - min_rpm))
+    temp_position=$((temp - min_temp))
+    
+    echo $(( min_rpm + (temp_position * pwm_range + temp_range/2) / temp_range ))
+}
+
+start_service() {
+    # 确保初始值
+    echo 30 > /sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1
+    
+    procd_open_instance
+    procd_set_param command /bin/sh -c "while :; do
+        min_temp=$(get_config min_temp || echo 40)
+        max_temp=$(get_config max_temp || echo 70)
+        min_rpm=$(get_config min_rpm || echo 30)
+        max_rpm=$(get_config max_rpm || echo 255)
+        
+        raw_temp=$(cat /sys/devices/virtual/thermal/thermal_zone0/temp 2>/dev/null)
+        temp=${raw_temp%000}
+        temp=${temp:-40}  # 默认40°C
+        
+        pwm=$(calculate_pwm $temp $min_temp $max_temp $min_rpm $max_rpm)
+        [ $pwm -lt 30 ] && pwm=30
+        
+        echo $pwm > /sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1 2>/dev/null
+        
+        sleep 10
+    done"
+    procd_set_param respawn
+    procd_close_instance
+}

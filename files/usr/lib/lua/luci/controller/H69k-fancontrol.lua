@@ -1,8 +1,8 @@
-module("luci.controller.fanctl", package.seeall)
+module("luci.controller.H69k-fancontrol", package.seeall)
 
 function index()
-    entry({"admin", "system", "fanctl"}, cbi("fanctl"), _("Fan Control"), 60).dependent = true
-    entry({"admin", "system", "fanctl", "status"}, call("action_status"))
+    entry({"admin", "system", "H69k-fancontrol"}, cbi("H69k-fancontrol"), _("H69k Fan Control"), 60).dependent = true
+    entry({"admin", "system", "H69k-fancontrol", "status"}, call("action_status"))
 end
 
 function action_status()

@@ -1,0 +1,6 @@
+config config 'config'
+    option min_temp '40'
+    option max_temp '70'
+    option min_rpm '30'
+    option max_rpm '255'
+    option enabled '1'

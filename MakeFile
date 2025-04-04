@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=luci-app-H69k-fancontrol
+PKG_NAME:=luci-app-H69kfancontrol
 PKG_VERSION:=1.4
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Your Name <your.email@example.com>

@@ -1,21 +1,24 @@
-module("luci.controller.H69k-fancontrol", package.seeall)
+local fs = require "nixio.fs"
+local sys = require "luci.sys"
+local util = require "luci.util"
+local template = require "luci.template"
+
+function validate_temperature(temp)
+    return tonumber(temp) and temp >= 0 and temp <= 100
+end
 
 function index()
-    entry({"admin", "system", "H69kfancontrol"}, cbi("H69kfancontrol"), _("H69k Fan Control"), 60).dependent = true
-    entry({"admin", "system", "H69kfancontrol", "status"}, call("action_status"))
+    entry({"admin", "services", "h69k_fancontrol"}, alias("admin", "services", "h69k_fancontrol", "config"), _("H69K Fan Control"), 60).dependent = true
+    entry({"admin", "services", "h69k_fancontrol", "config"}, cbi("h69k-fancontrol"), _("Configuration"), 10)
+    entry({"admin", "services", "h69k_fancontrol", "status"}, call("action_status"), _("Status"), 20)
 end
 
 function action_status()
-    local util = require "luci.util"
-    local temp_path = "/sys/devices/virtual/thermal/thermal_zone0/temp"
-    local rpm_path = "/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1"
-    
-    local temp = util.trim(util.exec("cat "..temp_path.." 2>/dev/null")) or "0"
-    local rpm = util.trim(util.exec("cat "..rpm_path.." 2>/dev/null")) or "0"
+    local status = {
+        running = (sys.call("pgrep h69k_fancontrol.sh >/dev/null") == 0),
+        config = util.ubus("uci", "get", {config = "h69k_fancontrol"})
+    }
     
     luci.http.prepare_content("application/json")
-    luci.http.write_json({
-        temperature = tonumber(temp) / 1000,
-        rpm = tonumber(rpm)
-    })
+    luci.http.write_json(status)
 end

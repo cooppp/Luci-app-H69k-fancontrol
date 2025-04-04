@@ -1,5 +1,5 @@
-msgid "Fan Control"
-msgstr "风扇控制"
+msgid "H69k Fan Control"
+msgstr "H69k 风扇控制"
 
 msgid "Fan Status Monitor"
 msgstr "风扇状态监控"

@@ -1,4 +1,4 @@
-local m = Map("fanctl", translate("Fan Control Settings"))
+local m = Map("H69kfancontrol", translate("H69k Fan Control Settings"))
 
 local s = m:section(NamedSection, "config", "fanctl", translate("Control Parameters"))
 s.addremove = false

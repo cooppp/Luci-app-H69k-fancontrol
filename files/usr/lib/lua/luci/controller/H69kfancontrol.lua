@@ -1,8 +1,8 @@
 module("luci.controller.H69k-fancontrol", package.seeall)
 
 function index()
-    entry({"admin", "system", "H69k-fancontrol"}, cbi("H69k-fancontrol"), _("H69k Fan Control"), 60).dependent = true
-    entry({"admin", "system", "H69k-fancontrol", "status"}, call("action_status"))
+    entry({"admin", "system", "H69kfancontrol"}, cbi("H69kfancontrol"), _("H69k Fan Control"), 60).dependent = true
+    entry({"admin", "system", "H69kfancontrol", "status"}, call("action_status"))
 end
 
 function action_status()

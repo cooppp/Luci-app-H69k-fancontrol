@@ -1,4 +1,4 @@
-m = Map("hk69fan", "高级风扇控制设置")
+m = Map("h69kfan", "H69K 风扇控制")
 
 s = m:section(TypedSection, "global", "控制参数")
 s.anonymous = true
@@ -33,7 +33,7 @@ s:option(Value, "interval", "检测间隔(秒)")
  .datatype = "range(5,60)"
 
 function m.on_after_commit(self)
-    os.execute("sleep 1 && /etc/init.d/hk69fan restart >/dev/null 2>&1")
+    os.execute("sleep 1 && /etc/init.d/h69kfan restart >/dev/null 2>&1")
 end
 
 return m

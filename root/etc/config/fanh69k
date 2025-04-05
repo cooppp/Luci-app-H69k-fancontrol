@@ -7,4 +7,4 @@ config control 'global'
     option Ki                '0.05'
     option Kd                '0.2'
     option interval          '20'
-    option enabled           '1'    # 新增启用开关
+    option enabled           '1'

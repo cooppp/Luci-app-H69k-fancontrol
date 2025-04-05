@@ -4,7 +4,7 @@ LUCI_TITLE:=LuCI Interface for Fan Control
 LUCI_DEPENDS:=+fanctrl +luci-lib-json +luci-compat
 LUCI_PKGARCH:=all
 PKG_MAINTAINER:=Your Name <your@email.com>
-PKG_VERSION:=1.2
+PKG_VERSION:=2.0
 
 PO_DIR:=po/zh-cn
 LUCI_I18N:=zh-cn

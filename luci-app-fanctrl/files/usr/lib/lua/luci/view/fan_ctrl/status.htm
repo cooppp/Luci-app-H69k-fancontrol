@@ -1,0 +1,31 @@
+<%+header%>
+<div class="cbi-map">
+    <h2 name="content"><%:Fan Status%></h2>
+    <div class="cbi-map-descr"><%:Real-time fan control status%></div>
+    
+    <div class="cbi-section">
+        <div class="cbi-section-node">
+            <div class="table">
+                <div class="tr">
+                    <div class="td left" width="33%"><%:Current Temperature%></div>
+                    <div class="td left" id="current-temp">-</div>
+                </div>
+                <div class="tr">
+                    <div class="td left"><%:Current PWM%></div>
+                    <div class="td left" id="current-pwm">-</div>
+                </div>
+                <div class="tr">
+                    <div class="td left"><%:Service Status%></div>
+                    <div class="td left" id="service-status">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cbi-page-actions">
+        <button class="btn cbi-button cbi-button-apply" id="btn-start"><%:Start Service%></button>
+        <button class="btn cbi-button cbi-button-reset" id="btn-stop"><%:Stop Service%></button>
+    </div>
+</div>
+<script type="text/javascript" src="<%=resource%>/fan_ctrl/status.js"></script>
+<%+footer%>

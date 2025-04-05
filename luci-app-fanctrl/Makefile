@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Fan Control Configuration Interface
-LUCI_DESCRIPTION:=Web interface for PWM fan speed control based on temperature
+LUCI_DESCRIPTION:=Web interface for PWM fan speed control
 LUCI_DEPENDS:=+fanctrl +luci-base +luci-compat +luci-lib-json
 LUCI_PKGARCH:=all
 LUCI_CATEGORY:=LuCI
@@ -14,37 +14,46 @@ PKG_MAINTAINER:=Your Name <your@email.com>
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
+# 定义构建准备阶段
+define Build/Prepare
+	mkdir -p $(PKG_BUILD_DIR)/luci
+	$(CP) ./files/* $(PKG_BUILD_DIR)/luci/
+endef
+
+# 定义空编译步骤（无需编译代码）
+define Build/Compile
+endef
+
 define Package/$(PKG_NAME)
   SECTION:=luci
   CATEGORY:=LuCI
   SUBMENU:=$(LUCI_SUBMENU)
   TITLE:=$(LUCI_TITLE)
   DEPENDS:=$(LUCI_DEPENDS)
-  PKGARCH:=$(LUCI_PKGARCH)
+  PKGARCH:=all
 endef
 
 define Package/$(PKG_NAME)/description
 $(LUCI_DESCRIPTION)
 endef
 
+# 安装阶段
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci
-	cp -pR $(PKG_BUILD_DIR)/luci/* $(1)/usr/lib/lua/luci/
+	# 安装 LuCI 控制器
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/luci/controller/fan_ctrl.lua $(1)/usr/lib/lua/luci/controller/
 	
+	# 安装 CBI 模型
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/fan_ctrl
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/luci/model/cbi/fan_ctrl/basic.lua $(1)/usr/lib/lua/luci/model/cbi/fan_ctrl/
+	
+	# 安装视图模板
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/fan_ctrl
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/luci/view/fan_ctrl/* $(1)/usr/lib/lua/luci/view/fan_ctrl/
+	
+	# 安装语言文件
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	po2lmo ./po/zh-cn/fan_ctrl.po $(1)/usr/lib/lua/luci/i18n/fan_ctrl.zh-cn.lmo
-	
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/etc/uci-defaults/99-fanctrl $(1)/etc/uci-defaults/
-endef
-
-define Package/$(PKG_NAME)/postinst
-#!/bin/sh
-[ -n "$${IPKG_INSTROOT}" ] || {
-	rm -f /tmp/luci-indexcache 2>/dev/null
-	/etc/init.d/rpcd reload >/dev/null 2>&1
-}
-exit 0
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/luci/i18n/*.lmo $(1)/usr/lib/lua/luci/i18n/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

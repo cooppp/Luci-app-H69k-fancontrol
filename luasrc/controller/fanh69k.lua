@@ -6,16 +6,19 @@ function index()
 end
 
 function action_status()
-    local temp = luci.sys.exec("cat /sys/class/thermal/thermal_zone0/temp | awk '{printf \"%.1f\", $1/1000}'")
-    local pwm = luci.sys.exec("cat /sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1")
-    local min_pwm = luci.sys.exec("uci get fanh69k.@control[-1].min_pwm")
-    local max_pwm = luci.sys.exec("uci get fanh69k.@control[-1].max_pwm")
+    local sys = require "luci.sys"
+    local uci = require "luci.model.uci".cursor()
+    
+    local temp = sys.exec("cat /sys/class/thermal/thermal_zone0/temp | awk '{printf \"%.1f\", $1/1000}'")
+    local pwm = sys.exec("cat /sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1")
     
     luci.http.prepare_content("application/json")
     luci.http.write_json({
         temp = temp,
         pwm = pwm,
-        min_pwm = min_pwm,
-        max_pwm = max_pwm
+        min_pwm = uci:get("fanh69k", "global", "min_pwm"),
+        max_pwm = uci:get("fanh69k", "global", "max_pwm"),
+        min_temp = uci:get("fanh69k", "global", "min_start_temp"),
+        max_temp = uci:get("fanh69k", "global", "max_full_temp")
     })
 end

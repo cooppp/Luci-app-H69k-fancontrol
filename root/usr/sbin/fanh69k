@@ -1,19 +1,28 @@
 #!/bin/sh
 
-. /lib/functions.sh
+# 读取启用状态
+config_load fanh69k
+config_get enabled global enabled 1
 
+# 关闭时退出
+[ "$enabled" = "0" ] && {
+    logger -t fanh69k "Control is disabled"
+    exit 0
+}
+
+# 主控制逻辑
 PWM_CTRL="/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1"
 TEMP_SENSOR="/sys/class/thermal/thermal_zone0/temp"
 
-config_load fanh69k
+# 初始化参数
 config_get min_start_temp global min_start_temp 35
 config_get max_full_temp  global max_full_temp  65
 config_get min_pwm        global min_pwm        30
 config_get max_pwm        global max_pwm        220
 config_get Kp             global Kp             0.8
-config_get Ki             global Ki             0.05
-config_get Kd             global Kd             0.2
-config_get interval       global interval       20
+config_get Ki             global Ki            0.05
+config_get Kd             global Kd            0.2
+config_get interval       global interval      20
 
 last_error=0
 integral=0

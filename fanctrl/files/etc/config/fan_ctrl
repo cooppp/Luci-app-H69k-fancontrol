@@ -1,5 +1,6 @@
+# fanctrl/files/etc/config/fan_ctrl
 config settings 'settings'
-    option pwm_ctrl '/sys/class/hwmon/hwmon0/pwm1'
+    option pwm_ctrl '/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1'  # 修改后的路径
     option temp_sensor '/sys/class/thermal/thermal_zone0/temp'
     option start_temp '35'
     option full_temp '45'

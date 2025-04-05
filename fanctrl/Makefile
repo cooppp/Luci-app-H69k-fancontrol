@@ -26,14 +26,14 @@ define Package/fanctrl/conffiles
 endef
 
 define Package/fanctrl/install
-    $(INSTALL_DIR) $(1)/etc/config
-    $(INSTALL_CONF) ./files/etc/config/fan_ctrl $(1)/etc/config/
-    
-    $(INSTALL_DIR) $(1)/etc/init.d
-    $(INSTALL_BIN) ./files/etc/init.d/fan_ctrl $(1)/etc/init.d/
-    
-    $(INSTALL_DIR) $(1)/usr/bin
-    $(INSTALL_BIN) ./files/usr/bin/fan_ctrl.sh $(1)/usr/bin/
+	$(INSTALL_DIR) $(1)/etc/config             # ← Tab 缩进
+	$(INSTALL_CONF) ./files/etc/config/fan_ctrl $(1)/etc/config/
+	
+	$(INSTALL_DIR) $(1)/etc/init.d             # ← Tab 缩进
+	$(INSTALL_BIN) ./files/etc/init.d/fan_ctrl $(1)/etc/init.d/
+	
+	$(INSTALL_DIR) $(1)/usr/bin                # ← Tab 缩进
+	$(INSTALL_BIN) ./files/usr/bin/fan_ctrl.sh $(1)/usr/bin/
 endef
 
-$(eval $(call BuildPackage,fanctrl))
+$(eval $(call BuildPackage,fanctrl))           # ← 正确闭合

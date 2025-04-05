@@ -5,9 +5,9 @@ LUCI_DESCRIPTION:=Web interface for PWM fan control
 LUCI_DEPENDS:=+fanctrl +luci-lib-json +luci-compat
 LUCI_PKGARCH:=all
 
-# 分类配置
+# 分类和子菜单设置
 LUCI_CATEGORY:=LuCI
-LUCI_SUBMENU:=Applications
+LUCI_SUBMENU:=3. Applications
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

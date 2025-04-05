@@ -1,37 +1,34 @@
 local m, s, o
 
 m = Map("fanh69k", translate("Fan Control Settings"), 
-    translate("PID-based thermal control for H69K devices"))
+    translate("Advanced PID-based thermal control for H69K devices"))
 
-s = m:section(NamedSection, "global", "control", translate("Global Parameters"))
+-- 启用开关
+s = m:section(NamedSection, "global", "control", translate("Global Switch"))
+s.anonymous = true
+s:option(ListValue, "enabled", translate("Enable Control"))
+    :value("1", translate("Enabled"))
+    :value("0", translate("Disabled"))
 
-o = s:option(Value, "min_start_temp", translate("Minimum Start Temp (℃)"))
-o.datatype = "uinteger"
-o.optional = false
+-- 基础参数（依赖启用状态）
+s = m:section(NamedSection, "global", "control", translate("Basic Parameters"))
+s.anonymous = true
+s:depends("enabled", "1")
 
-o = s:option(Value, "max_full_temp", translate("Max Full Temp (℃)"))
-o.datatype = "uinteger"
+s:option(Value, "min_start_temp", translate("Minimum Start Temp (℃)")).datatype = "uinteger"
+s:option(Value, "max_full_temp", translate("Max Full Temp (℃)")).datatype = "uinteger"
+s:option(Value, "min_pwm", translate("Minimum PWM")).datatype = "range(0,255)"
+s:option(Value, "max_pwm", translate("Maximum PWM")).datatype = "range(0,255)"
+s:option(Value, "interval", translate("Check Interval (s)")).datatype = "uinteger"
 
-o = s:option(Value, "min_pwm", translate("Minimum PWM"))
-o.datatype = "range(0,255)"
+-- PID调校（依赖启用状态）
+s = m:section(SimpleSection)
+s.title = translate("PID Tuning")
+s.anonymous = true
+s:depends("enabled", "1")
 
-o = s:option(Value, "max_pwm", translate("Maximum PWM"))
-function o.validate(self, value)
-    local min_pwm = m:get("global", "min_pwm")
-    if tonumber(value) <= tonumber(min_pwm) then
-        return nil, translate("Max PWM must be greater than Min PWM")
-    end
-    return value
-end
-
-s:tab("pid", translate("PID Tuning"))
-o = s:taboption("pid", Value, "Kp", translate("Proportional (Kp)"))
-o.datatype = "float"
-
-o = s:taboption("pid", Value, "Ki", translate("Integral (Ki)"))
-o.datatype = "float"
-
-o = s:taboption("pid", Value, "Kd", translate("Derivative (Kd)"))
-o.datatype = "float"
+s:option(Value, "Kp", translate("Proportional (Kp)")).datatype = "float"
+s:option(Value, "Ki", translate("Integral (Ki)")).datatype = "float"
+s:option(Value, "Kd", translate("Derivative (Kd)")).datatype = "float"
 
 return m

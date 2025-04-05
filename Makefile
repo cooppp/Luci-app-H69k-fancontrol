@@ -4,21 +4,18 @@ PKG_NAME:=luci-app-fanh69k
 PKG_VERSION:=1.0
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
-
-LUCI_TITLE:=H69K Fan Control Interface
+# 关键配置：定义菜单分类和依赖
+LUCI_TITLE:=H69K Fan Control
 LUCI_DEPENDS:=+luci-base +luci-compat
 LUCI_PKGARCH:=all
+LUCI_CATEGORY:=LuCI
+LUCI_SUBMENU:=Applications  # 确保应用出现在 Applications 子菜单
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/luci.mk
+include $(TOPDIR)/feeds/luci/luci.mk  # 正确包含 luci.mk
 
-define Package/$(PKG_NAME)/preinst
-#!/bin/sh
-[ -w "/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1" ] || {
-    echo "ERROR: PWM device not writable!" >&2
-    exit 1
-}
+define Package/$(PKG_NAME)/conffiles
+/etc/config/fanh69k
 endef
 
 define Package/$(PKG_NAME)/install
@@ -41,7 +38,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DATA) ./htdocs/luci-static/resources/fanh69k/status.htm $(1)/www/luci-static/resources/fanh69k/
 	
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
-	$(INSTALL_DATA) ./po/zh_Hans/fanh69k.po $(1)/usr/lib/lua/luci/i18n/
+	$(INSTALL_DATA) ./po/zh_Hans/fanh69k.po $(1)/usr/lib/lua/luci/i18n/fanh69k.zh-cn.po
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

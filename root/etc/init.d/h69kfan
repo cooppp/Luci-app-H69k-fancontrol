@@ -2,25 +2,26 @@
 
 START=99
 USE_PROCD=1
+SERVICE_NAME="h69kfan"
 
 start_service() {
-    [ -f /etc/config/hk69fan ] || {
-        uci set hk69fan.@global[0]=control
-        uci set hk69fan.@global[0].start_temp=35
-        uci set hk69fan.@global[0].full_temp=45
-        uci set hk69fan.@global[0].min_pwm=100
-        uci set hk69fan.@global[0].max_pwm=255
-        uci set hk69fan.@global[0].interval=20
-        uci commit hk69fan
+    [ -f /etc/config/h69kfan ] || {
+        uci set h69kfan.@global[0]=control
+        uci set h69kfan.@global[0].start_temp=35
+        uci set h69kfan.@global[0].full_temp=45
+        uci set h69kfan.@global[0].min_pwm=100
+        uci set h69kfan.@global[0].max_pwm=255
+        uci set h69kfan.@global[0].interval=20
+        uci commit h69kfan
     }
     
     procd_open_instance
-    procd_set_param command /usr/libexec/hk69fan-core
+    procd_set_param command /usr/libexec/h69kfan-core
     procd_set_param respawn
     procd_close_instance
 }
 
 stop_service() {
-    killall hk69fan-core
+    killall h69kfan-core
     echo 100 > /sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1
 }

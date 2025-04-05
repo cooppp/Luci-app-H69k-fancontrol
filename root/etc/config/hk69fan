@@ -1,0 +1,6 @@
+config control 'global'
+    option start_temp    '35'
+    option full_temp     '45'
+    option min_pwm       '100'
+    option max_pwm       '255'
+    option interval      '20'

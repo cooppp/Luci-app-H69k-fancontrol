@@ -1,10 +1,10 @@
 #!/bin/sh
+CONFIG_FILE="/etc/config/h69kfan"
 PWM_CTRL="/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1"
 TEMP_SENSOR="/sys/class/thermal/thermal_zone0/temp"
 
 read_config() {
-    config=$(uci -q show hk69fan | sed "s/'//g")
-    echo "$config" | awk -F= '
+    uci -q show "$CONFIG_FILE" | sed "s/'//g" | awk -F= '
         /start_temp/ {st=$2} 
         /full_temp/  {ft=$2}
         /min_pwm/    {min=$2} 
@@ -24,7 +24,6 @@ get_temp() {
 
 calc_pwm() {
     eval $(read_config)
-    
     if [ $1 -le $start_temp ]; then
         echo $min_pwm
     elif [ $1 -ge $full_temp ]; then

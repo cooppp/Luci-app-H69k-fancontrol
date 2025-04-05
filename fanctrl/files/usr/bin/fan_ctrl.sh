@@ -6,39 +6,45 @@ get_uci() {
     uci -q get "${CONFIG_FILE}.settings.$1" || echo "$2"
 }
 
-# fanctrl/files/usr/bin/fan_ctrl.sh 新增硬件检测函数
 detect_pwm_path() {
     local fallback_path="/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1"
-    
-    # 尝试自动检测路径
     detected_path=$(find /sys/devices/platform/pwm-fan/hwmon/hwmon*/pwm1 2>/dev/null | head -1)
-    
-    if [ -n "$detected_path" ]; then
-        echo "$detected_path"
-    else
-        echo "$fallback_path"
-        logger -t FAN_CTRL "使用备用PWM路径: $fallback_path"
+    echo "${detected_path:-$fallback_path}"
+}
+
+validate_hardware() {
+    if [ ! -w "$PWM_CTRL" ]; then
+        logger -t FAN_CTRL "PWM路径不可写: $PWM_CTRL"
+        logger -t FAN_CTRL "尝试自动修复权限..."
+        chmod 666 "$PWM_CTRL" 2>/dev/null || {
+            logger -t FAN_CTRL "权限修复失败，请手动检查硬件路径"
+            exit 1
+        }
+    fi
+
+    if [ ! -r "$TEMP_SENSOR" ]; then
+        logger -t FAN_CTRL "温度传感器不可读: $TEMP_SENSOR"
+        TEMP_SENSOR="/sys/class/thermal/thermal_zone0/temp"
+        logger -t FAN_CTRL "尝试使用备用传感器: $TEMP_SENSOR"
     fi
 }
 
-# 修改配置读取逻辑
-PWM_CTRL=$(get_uci pwm_ctrl "$(detect_pwm_path)")  # 动态获取路径
+# 动态获取硬件路径
+PWM_CTRL=$(get_uci pwm_ctrl "$(detect_pwm_path)")
 TEMP_SENSOR=$(get_uci temp_sensor "/sys/class/thermal/thermal_zone0/temp")
 START_TEMP=$(get_uci start_temp 35)
 FULL_TEMP=$(get_uci full_temp 45)
 MIN_PWM=$(get_uci min_pwm 30)
 CHECK_INTERVAL=$(get_uci check_interval 20)
 
-# 初始化硬件
 init_pwm() {
-    [ -w "$PWM_CTRL" ] || {
-        logger -t FAN_CTRL "错误：PWM设备不可写，请执行 chmod 666 $PWM_CTRL"
+    validate_hardware
+    echo 1 > "${PWM_CTRL}_enable" 2>/dev/null || {
+        logger -t FAN_CTRL "无法初始化PWM控制器"
         exit 1
     }
-    echo 1 > "${PWM_CTRL}_enable" 2>/dev/null
 }
 
-# 安全温度读取
 get_temp() {
     temp_raw=$(cat $TEMP_SENSOR 2>/dev/null | tr -cd '0-9')
     [ -z "$temp_raw" ] && {
@@ -49,7 +55,6 @@ get_temp() {
     echo $((temp_raw / 1000))
 }
 
-# 计算PWM值
 calc_pwm() {
     local temp=$1
     [ $temp -le $START_TEMP ] && echo $MIN_PWM && return
@@ -61,7 +66,6 @@ calc_pwm() {
     echo $pwm
 }
 
-# 主控制循环
 main() {
     init_pwm
     local last_pwm=$MIN_PWM
@@ -70,7 +74,6 @@ main() {
         temp=$(get_temp)
         target_pwm=$(calc_pwm $temp)
         
-        # 梯度限制
         delta=$((target_pwm - last_pwm))
         if [ ${delta#-} -gt 25 ]; then
             target_pwm=$((last_pwm + 25*(delta > 0 ? 1 : -1)))

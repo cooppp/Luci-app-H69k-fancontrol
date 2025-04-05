@@ -4,11 +4,18 @@
     <div class="cbi-section">
         <div class="cbi-value">
             <label class="cbi-value-title"><%:Temperature%></label>
-            <div class="cbi-value-field" id="temp">-</div>
+            <div class="cbi-value-field" id="current_temp">-</div>
         </div>
         <div class="cbi-value">
-            <label class="cbi-value-title"><%:PWM Speed%></label>
-            <div class="cbi-value-field" id="pwm">-</div>
+            <label class="cbi-value-title"><%:Current PWM%></label>
+            <div class="cbi-value-field" id="current_pwm">-</div>
+        </div>
+        <div class="cbi-value">
+            <label class="cbi-value-title"><%:Allowed Range%></label>
+            <div class="cbi-value-field" id="allowed_range">
+                PWM: <span id="min_pwm">-</span>-<span id="max_pwm">-</span> | 
+                Temp: <span id="min_temp">-</span>℃-<span id="max_temp">-</span>℃
+            </div>
         </div>
     </div>
 </div>
@@ -16,12 +23,15 @@
 <script>
 setInterval(function() {
     fetch('<%=luci.dispatcher.build_url("admin", "system", "fanh69k", "status")%>')
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
-            document.getElementById('temp').textContent = data.temp + ' ℃';
-            document.getElementById('pwm').textContent = 
-                data.pwm + ' (Range: ' + data.min_pwm + '-' + data.max_pwm + ')';
+            document.getElementById("current_temp").textContent = data.temp + " ℃";
+            document.getElementById("current_pwm").textContent = data.pwm;
+            document.getElementById("min_pwm").textContent = data.min_pwm;
+            document.getElementById("max_pwm").textContent = data.max_pwm;
+            document.getElementById("min_temp").textContent = data.min_temp;
+            document.getElementById("max_temp").textContent = data.max_temp;
         });
-}, 1000);
+}, 2000);
 </script>
 <%+footer%>

@@ -9,6 +9,7 @@ PKG_LICENSE:=GPL-3.0
 
 include $(INCLUDE_DIR)/package.mk
 
+# 定义包的基本信息
 define Package/fanctrl
   SECTION:=utils
   CATEGORY:=Utilities
@@ -17,23 +18,40 @@ define Package/fanctrl
   PKGARCH:=all
 endef
 
+# 包描述
 define Package/fanctrl/description
  Adaptive PWM fan control with temperature monitoring.
 endef
 
+# 配置文件声明
 define Package/fanctrl/conffiles
 /etc/config/fan_ctrl
 endef
 
-define Package/fanctrl/install
-	$(INSTALL_DIR) $(1)/etc/config             # ← Tab 缩进
-	$(INSTALL_CONF) ./files/etc/config/fan_ctrl $(1)/etc/config/
-	
-	$(INSTALL_DIR) $(1)/etc/init.d             # ← Tab 缩进
-	$(INSTALL_BIN) ./files/etc/init.d/fan_ctrl $(1)/etc/init.d/
-	
-	$(INSTALL_DIR) $(1)/usr/bin                # ← Tab 缩进
-	$(INSTALL_BIN) ./files/usr/bin/fan_ctrl.sh $(1)/usr/bin/
+# 准备阶段：复制文件到构建目录
+define Build/Prepare
+	mkdir -p $(PKG_BUILD_DIR)
+	$(CP) ./files/* $(PKG_BUILD_DIR)/
 endef
 
-$(eval $(call BuildPackage,fanctrl))           # ← 正确闭合
+# 无需编译步骤（空定义）
+define Build/Compile
+endef
+
+# 安装阶段：部署文件到固件
+define Package/fanctrl/install
+	# 安装配置文件
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/etc/config/fan_ctrl $(1)/etc/config/
+	
+	# 安装初始化脚本
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/etc/init.d/fan_ctrl $(1)/etc/init.d/
+	
+	# 安装主程序
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/usr/bin/fan_ctrl.sh $(1)/usr/bin/
+endef
+
+# 生成包
+$(eval $(call BuildPackage,fanctrl))

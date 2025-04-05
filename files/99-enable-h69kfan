@@ -1,0 +1,5 @@
+#!/bin/sh
+# 首次安装后自动启用服务
+/etc/init.d/h69kfan enable
+/etc/init.d/h69kfan start
+exit 0

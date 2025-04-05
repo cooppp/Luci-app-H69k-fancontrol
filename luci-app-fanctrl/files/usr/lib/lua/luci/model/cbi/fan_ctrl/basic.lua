@@ -6,10 +6,12 @@ s.addremove = false
 o = s:option(Value, "pwm_ctrl", translate("PWM Control Path"))
 o.datatype = "string"
 o.rmempty = false
+o.description = translate("Example: /sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1")
 
 o = s:option(Value, "temp_sensor", translate("Temperature Sensor Path"))
 o.datatype = "string"
 o.rmempty = false
+o.default = "/sys/class/thermal/thermal_zone0/temp"
 
 o = s:option(Value, "start_temp", translate("Start Temperature (°C)"))
 o.datatype = "ufloat"

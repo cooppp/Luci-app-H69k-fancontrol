@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2023-08-01 12:00+0800\n"
+"Project-Id-Version: fanctrl 2.0\n"
+"PO-Revision-Date: 2023-08-10 12:00+0800\n"
 "Last-Translator: Your Name <your@email.com>\n"
 "Language-Team: Chinese\n"
 "Language: zh-cn\n"
@@ -17,6 +17,9 @@ msgstr "控制参数"
 
 msgid "PWM Control Path"
 msgstr "PWM控制路径"
+
+msgid "Example: /sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1"
+msgstr "示例：/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1"
 
 msgid "Temperature Sensor Path"
 msgstr "温度传感器路径"

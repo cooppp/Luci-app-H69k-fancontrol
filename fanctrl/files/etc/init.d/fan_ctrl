@@ -9,7 +9,7 @@ SERVICE_BIN=/usr/bin/fan_ctrl.sh
 
 start_service() {
     procd_open_instance
-    procd_set_param command "$SERVICE_BIN"
+    procd_set_param command "$SERVICE_BIN" start
     procd_set_param respawn 300 5 0
     procd_set_param stdout 1
     procd_set_param stderr 1
@@ -18,4 +18,5 @@ start_service() {
 
 stop_service() {
     killall -9 fan_ctrl.sh
+    echo 0 > $(uci -q get fan_ctrl.settings.pwm_ctrl || echo '/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1')
 }

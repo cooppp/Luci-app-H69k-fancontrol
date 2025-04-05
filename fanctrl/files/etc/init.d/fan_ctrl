@@ -17,6 +17,8 @@ start_service() {
 }
 
 stop_service() {
+    local pwm_path=$(uci -q get fan_ctrl.settings.pwm_ctrl || 
+        echo "/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1")
     killall -9 fan_ctrl.sh
-    echo 0 > $(uci -q get fan_ctrl.settings.pwm_ctrl || echo '/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1')
+    [ -w "$pwm_path" ] && echo 0 > "$pwm_path"
 }

@@ -1,25 +1,38 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=luci-app-hk69fan
+PKG_NAME:=luci-app-h69kfan
 PKG_VERSION:=2.0
 PKG_RELEASE:=1
 
-LUCI_TITLE:=HK69 Intelligent Fan Controller
+LUCI_TITLE:=H69K Intelligent Fan Controller
 LUCI_DEPENDS:=+uci
 LUCI_PKGARCH:=all
+LUCI_CATEGORY:=LuCI
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
 define Package/$(PKG_NAME)/install
     $(INSTALL_DIR) $(1)/etc/config
-    $(INSTALL_CONF) ./root/etc/config/hk69fan $(1)/etc/config/
+    $(INSTALL_CONF) ./root/etc/config/h69kfan $(1)/etc/config/
     
     $(INSTALL_DIR) $(1)/etc/init.d
-    $(INSTALL_BIN) ./root/etc/init.d/hk69fan $(1)/etc/init.d/
+    $(INSTALL_BIN) ./root/etc/init.d/h69kfan $(1)/etc/init.d/
     
     $(INSTALL_DIR) $(1)/usr/libexec
-    $(INSTALL_BIN) ./root/usr/libexec/hk69fan-core $(1)/usr/libexec/
+    $(INSTALL_BIN) ./root/usr/libexec/h69kfan-core $(1)/usr/libexec/
     
-    $(CP) -r ./luasrc $(1)/usr/lib/lua/luci/
-    $(CP) -r ./htdocs $(1)/www/
+    $(INSTALL_DIR) $(1)/usr/lib/lua/luci
+    cp -r ./luasrc/* $(1)/usr/lib/lua/luci/
+    
+    $(INSTALL_DIR) $(1)/www
+    cp -r ./htdocs/* $(1)/www/
+endef
+
+define Package/$(PKG_NAME)/postinst
+#!/bin/sh
+[ -n "$$IPKG_INSTROOT" ] || {     /etc/init.d/h69kfan enable >/dev/null 2>&1     /etc/init.d/h69kfan start >/dev/null 2>&1 } exit 0 endef  define Package/$(PKG_NAME)/prerm #!/bin/sh [ -n "$$IPKG_INSTROUT" ] || {
+    /etc/init.d/h69kfan stop >/dev/null 2>&1
+    /etc/init.d/h69kfan disable >/dev/null 2>&1
+}
+exit 0
 endef

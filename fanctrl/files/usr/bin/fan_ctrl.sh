@@ -6,7 +6,23 @@ get_uci() {
     uci -q get "${CONFIG_FILE}.settings.$1" || echo "$2"
 }
 
-PWM_CTRL=$(get_uci pwm_ctrl "/sys/class/hwmon/hwmon0/pwm1")
+# fanctrl/files/usr/bin/fan_ctrl.sh 新增硬件检测函数
+detect_pwm_path() {
+    local fallback_path="/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1"
+    
+    # 尝试自动检测路径
+    detected_path=$(find /sys/devices/platform/pwm-fan/hwmon/hwmon*/pwm1 2>/dev/null | head -1)
+    
+    if [ -n "$detected_path" ]; then
+        echo "$detected_path"
+    else
+        echo "$fallback_path"
+        logger -t FAN_CTRL "使用备用PWM路径: $fallback_path"
+    fi
+}
+
+# 修改配置读取逻辑
+PWM_CTRL=$(get_uci pwm_ctrl "$(detect_pwm_path)")  # 动态获取路径
 TEMP_SENSOR=$(get_uci temp_sensor "/sys/class/thermal/thermal_zone0/temp")
 START_TEMP=$(get_uci start_temp 35)
 FULL_TEMP=$(get_uci full_temp 45)

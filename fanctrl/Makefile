@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fanctrl
-PKG_VERSION:=1.0
+PKG_VERSION:=1.2
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Your Name <your@email.com>
@@ -13,12 +13,12 @@ define Package/fanctrl
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=Intelligent Fan Control Daemon
-  DEPENDS:=+bash
+  DEPENDS:=+bash +coreutils
   PKGARCH:=all
 endef
 
 define Package/fanctrl/description
-  Adaptive PWM fan control with temperature monitoring.
+ Adaptive PWM fan control with temperature monitoring.
 endef
 
 define Package/fanctrl/conffiles

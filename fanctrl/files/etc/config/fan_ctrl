@@ -1,0 +1,7 @@
+config settings 'settings'
+    option pwm_ctrl '/sys/class/hwmon/hwmon0/pwm1'
+    option temp_sensor '/sys/class/thermal/thermal_zone0/temp'
+    option start_temp '35'
+    option full_temp '45'
+    option min_pwm '30'
+    option check_interval '20'

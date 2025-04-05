@@ -1,0 +1,27 @@
+<%+header%>
+<div class="cbi-map">
+    <h2 name="content"><%:Real-time Fan Status%></h2>
+    <div class="cbi-section">
+        <div class="cbi-value">
+            <label class="cbi-value-title"><%:Temperature%></label>
+            <div class="cbi-value-field" id="temp">-</div>
+        </div>
+        <div class="cbi-value">
+            <label class="cbi-value-title"><%:PWM Speed%></label>
+            <div class="cbi-value-field" id="pwm">-</div>
+        </div>
+    </div>
+</div>
+
+<script>
+setInterval(function() {
+    fetch('<%=luci.dispatcher.build_url("admin", "system", "fanh69k", "status")%>')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('temp').textContent = data.temp + ' ℃';
+            document.getElementById('pwm').textContent = 
+                data.pwm + ' (Range: ' + data.min_pwm + '-' + data.max_pwm + ')';
+        });
+}, 1000);
+</script>
+<%+footer%>

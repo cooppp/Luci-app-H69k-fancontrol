@@ -1,0 +1,25 @@
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=luci-app-hk69fan
+PKG_VERSION:=2.0
+PKG_RELEASE:=1
+
+LUCI_TITLE:=HK69 Intelligent Fan Controller
+LUCI_DEPENDS:=+uci
+LUCI_PKGARCH:=all
+
+include $(TOPDIR)/feeds/luci/luci.mk
+
+define Package/$(PKG_NAME)/install
+    $(INSTALL_DIR) $(1)/etc/config
+    $(INSTALL_CONF) ./root/etc/config/hk69fan $(1)/etc/config/
+    
+    $(INSTALL_DIR) $(1)/etc/init.d
+    $(INSTALL_BIN) ./root/etc/init.d/hk69fan $(1)/etc/init.d/
+    
+    $(INSTALL_DIR) $(1)/usr/libexec
+    $(INSTALL_BIN) ./root/usr/libexec/hk69fan-core $(1)/usr/libexec/
+    
+    $(CP) -r ./luasrc $(1)/usr/lib/lua/luci/
+    $(CP) -r ./htdocs $(1)/www/
+endef
